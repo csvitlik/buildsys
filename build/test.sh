@@ -30,13 +30,8 @@ run_cmd(){
 run_cmd "cd .."
 run_cmd "make doc"
 run_cmd "make clean"
-run_cmd "make test"
-run_cmd "make TARGET=test V=1 clean"
-
-run_cmd "cd projects/test"
-run_cmd "make V=1"
-
-run_cmd "cd ../.."
-run_cmd "make TARGET=test V=1 clean"
+run_cmd "make hello"
+run_cmd "make TARGET=hello V=1 clean"
+run_cmd "make clean"
 
 good "$run_cmds_ok / $run_cmds ok"

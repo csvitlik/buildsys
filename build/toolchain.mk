@@ -1,18 +1,24 @@
 # Here, we define the tools necessary to build.
-export CROSS   ?=
-export cxx     = $(Q)$(CROSS)g++
-export ar      = $(Q)$(CROSS)ar
-export as      = $(Q)$(CROSS)as
-export cc      = $(Q)$(CROSS)gcc
-export doxygen = $(Q)doxygen
-export echo    = $(Q)echo
-export make    = $(Q)make
-export mkdir   = $(Q)mkdir -p
-export rm      = $(Q)rm -rf
+CROSS    ?=
+ar       := $(Q)$(CROSS)ar
+as       := $(Q)$(CROSS)as
+cc       := $(Q)$(CROSS)gcc
+cxx      := $(Q)$(CROSS)g++
+doxygen  := $(Q)doxygen
+echo     := $(Q)echo
+make     := $(Q)make
+mkdir    := $(Q)mkdir -p
+rm       := $(Q)rm -rf
 
-export arflags  ?=
-export asflags  ?=
-export cflags   ?= -std=c11   -W -Wall -Werror -pedantic -O2 -g $(DEBUG_FLAGS)
-export cxxflags ?= -std=c++11 -W -Wall -Werror -pedantic -O2 -g $(DEBUG_FLAGS)
+includes =
+defines =
+flags = -W -Werror -Wall -Wextra -pedantic -O2 -g0 \
+		$(DEBUG_FLAGS) \
+		$(defines) \
+		$(includes)
 
-export DOXY_DIRS = html latex
+arflags  :=
+asflags  :=
+cflags   := -std=c11   $(flags)
+cxxflags := -std=c++11 $(flags)
+ldflags  :=

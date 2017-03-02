@@ -1,36 +1,46 @@
-# https://stackoverflow.com/a/18137056
-mkfile_path := $(abspath $(lastword $(MAKEFILE_LIST)))
-export top_dir := $(shell dirname $(mkfile_path))
+.PHONY: all clean doc help zip
 
-include $(top_dir)/build/toolchain.mk
+.DEFAULT_GOAL = help
 
-ifneq ($(TARGET),)
-all:
-	$(make) -C projects/$(TARGET) \
-		TARGET=$(TARGET) $(MAKECMDGOALS)
+TOP_DIR := $(CURDIR)
+BASENAME := $(notdir $(TOP_DIR))
 
-$(MAKECMDGOALS): all
-else
-$(MAKECMDGOALS):
-	$(make) -C projects/$(MAKECMDGOALS) \
-		TARGET=$(MAKECMDGOALS) $(MAKECMDGOALS)
+%:
+	$(MAKE) TARGET=$@ -C build $@
 
-all:
-	@echo 'Build Targets:'
-	@echo ''
-	@echo '	doc	Build doxygen doxumentation.'
-	@echo '	clean	Clean doxygen doxumentation.'
-	@echo ''
-	@echo '	TARGET=test 		Build test project.'
-	@echo '	TARGET=test clean	Clean test project.'
+all: allprojects doc zip
 
-doc:
-	$(doxygen) build/Doxyfile
+allprojects:
+	@$(foreach dir,$(wildcard projects/*),\
+	    $(MAKE) TARGET=$(notdir $(dir)) -C build $(notdir $(dir)) ;)
 
 clean:
-	$(rm) $(DOXY_DIRS)
-endif
+	@rm -rf html latex $(BASENAME).zip
+	@$(foreach dir,$(wildcard projects/*),\
+	    $(MAKE) TARGET=$(notdir $(dir)) -C build clean ;)
 
-.PHONY: all clean doc help $(TARGET)
+doc:
+	doxygen build/Doxyfile
+
+help:
+	@echo 'Special Targets:'
+	@echo ''
+	@echo '	all	Build all projects.'
+	@echo '	clean	Clean all projects.'
+	@echo '	doc	Build doxygen documentation package.'
+	@echo '	help	This help message.'
+	@echo '	zip	Build distribition zip.'
+	@echo ''
+	@echo 'Available Projects:'
+	@echo ''
+	@$(foreach dir,$(wildcard projects/*),\
+	    echo "	$(notdir $(dir))" ;)
+	@echo ''
+
+zip:
+	cd .. ; zip -r -9 \
+	    $(TOP_DIR)/$(BASENAME).zip \
+	    $(BASENAME) \
+	    -x \*.git/\*
 
 # vim: ts=8
